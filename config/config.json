@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "custom-schema-editor-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/customSchemaEditor/CustomSchemaEditorWebPart.js",
+          "manifest": "./src/webparts/customSchemaEditor/CustomSchemaEditorWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "CustomSchemaEditorWebPartStrings": "lib/webparts/customSchemaEditor/loc/{locale}.js"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "spo-custom-schema-client-side-solution",
+    "id": "a2a57681-2754-4b1e-9872-a4d30e994bb6",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "isDomainIsolated": false
+  },
+  "paths": {
+    "zippedPackage": "solution/spo-custom-schema.sppkg"
+  }
+}
