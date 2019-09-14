@@ -1,25 +1,19 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
   "id": "59668f64-a093-4cb9-a73a-5f3b57e687b5",
-  "alias": "CustomSchemaEditorWebPart",
+  "alias": "Custom Schema Editor",
   "componentType": "WebPart",
-
-  // The "*" signifies that the version should be taken from the package.json
   "version": "*",
   "manifestVersion": 2,
-
-  // If true, the component can only be installed on sites where Custom Script is allowed.
-  // Components that allow authors to embed arbitrary script code should set this to true.
-  // https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f
   "requiresCustomScript": false,
   "supportedHosts": ["SharePointWebPart"],
-
   "preconfiguredEntries": [{
-    "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Other
+    "groupId": "070951d7-94da-4db8-b06e-9d581f1f55b1",
     "group": { "default": "Other" },
     "title": { "default": "Custom Schema Editor" },
     "description": { "default": "Allows editing custom schema&#39;s properties for sharepoint group." },
-    "officeFabricIconFontName": "Page",
+
+    "iconImageUrl": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5OTggMTE0OC4yMyI+PHRpdGxlPkFzc2V0IDE8L3RpdGxlPjxwb2x5Z29uIHBvaW50cz0iODM4IDk2Mi4wNiA5OTggODc3LjM4IDk5OCA3NjguOTggNDc5IDQ4NS42IDQ3OSAzOTMuNzcgMzIxIDQ4NC43MyAzMjEgNTc5LjA0IDgzOCA4NjIuNDIgODM4IDk2Mi4wNiIvPjxwb2x5Z29uIHBvaW50cz0iNDk5IDAgMCAyODcuMDUgMCA4NjEuMTcgNDk5IDExNDguMjMgNDk5IDk2Ni4zMyAxNjAgNzcwLjIyIDE2MCAzNzguMDEgNDk5LjM3IDE4MS45IDgzOS43NyAzNzguMDEgOTk4IDI4Ny44NiA5OTggMjg3LjA1IDQ5OSAwIi8+PC9zdmc+",
     "properties": {
       "description": "Custom Schema Editor"
     }
