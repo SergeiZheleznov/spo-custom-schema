@@ -6,7 +6,7 @@ import {
   IPropertyPaneConfiguration,
   PropertyPaneTextField
 } from '@microsoft/sp-property-pane';
-
+import { MSGraphClient } from '@microsoft/sp-http';
 import * as strings from 'CustomSchemaEditorWebPartStrings';
 import CustomSchemaEditor from './components/CustomSchemaEditor';
 import { ICustomSchemaEditorProps } from './components/ICustomSchemaEditorProps';
@@ -16,6 +16,17 @@ export interface ICustomSchemaEditorWebPartProps {
 }
 
 export default class CustomSchemaEditorWebPart extends BaseClientSideWebPart<ICustomSchemaEditorWebPartProps> {
+
+  private graphClient: MSGraphClient;
+
+
+  public async onInit(): Promise<void> {
+    try {
+      this.graphClient = await this.context.msGraphClientFactory.getClient();
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   public render(): void {
     const element: React.ReactElement<ICustomSchemaEditorProps > = React.createElement(
