@@ -3,7 +3,7 @@
   "solution": {
     "name": "spo-custom-schema-client-side-solution",
     "id": "a2a57681-2754-4b1e-9872-a4d30e994bb6",
-    "version": "1.0.0.0",
+    "version": "1.0.0.1",
     "includeClientSideAssets": true,
     "isDomainIsolated": false,
     "webApiPermissionRequests": [

@@ -10,6 +10,14 @@ import { MSGraphClient } from '@microsoft/sp-http';
 import * as strings from 'CustomSchemaEditorWebPartStrings';
 import CustomSchemaEditor from './components/CustomSchemaEditor';
 import { ICustomSchemaEditorProps } from './components/ICustomSchemaEditorProps';
+import { IGroupService, GroupService } from '../../shared/services/';
+
+import {
+  Logger,
+  ConsoleListener,
+  LogLevel
+} from "@pnp/logging";
+const LOG_SOURCE: string = 'CustomSchemaEditorWebPart';
 
 export interface ICustomSchemaEditorWebPartProps {
   description: string;
@@ -18,13 +26,20 @@ export interface ICustomSchemaEditorWebPartProps {
 export default class CustomSchemaEditorWebPart extends BaseClientSideWebPart<ICustomSchemaEditorWebPartProps> {
 
   private graphClient: MSGraphClient;
-
+  private groupService: IGroupService;
 
   public async onInit(): Promise<void> {
+
+    Logger.subscribe(new ConsoleListener());
+    Logger.activeLogLevel = LogLevel.Info;
+    Logger.write(`[${LOG_SOURCE}] onInit();`);
+
     try {
+      Logger.write(`[${LOG_SOURCE}] Retrieving of Graph Client`);
       this.graphClient = await this.context.msGraphClientFactory.getClient();
+      this.groupService = new GroupService(this.graphClient);
     } catch (error) {
-      console.log(error);
+      Logger.writeJSON(error,LogLevel.Error);
     }
   }
 
@@ -32,7 +47,8 @@ export default class CustomSchemaEditorWebPart extends BaseClientSideWebPart<ICu
     const element: React.ReactElement<ICustomSchemaEditorProps > = React.createElement(
       CustomSchemaEditor,
       {
-        description: this.properties.description
+        description: this.properties.description,
+        groupService: this.groupService
       }
     );
 
