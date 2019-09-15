@@ -20,7 +20,7 @@ import {
 const LOG_SOURCE: string = 'CustomSchemaEditorWebPart';
 
 export interface ICustomSchemaEditorWebPartProps {
-  description: string;
+  customSchemaId: string;
 }
 
 export default class CustomSchemaEditorWebPart extends BaseClientSideWebPart<ICustomSchemaEditorWebPartProps> {
@@ -44,10 +44,9 @@ export default class CustomSchemaEditorWebPart extends BaseClientSideWebPart<ICu
   }
 
   public render(): void {
-    const element: React.ReactElement<ICustomSchemaEditorProps > = React.createElement(
+    const element: React.ReactElement<ICustomSchemaEditorProps> = React.createElement(
       CustomSchemaEditor,
       {
-        description: this.properties.description,
         groupService: this.groupService
       }
     );
@@ -67,15 +66,12 @@ export default class CustomSchemaEditorWebPart extends BaseClientSideWebPart<ICu
     return {
       pages: [
         {
-          header: {
-            description: strings.PropertyPaneDescription
-          },
           groups: [
             {
-              groupName: strings.BasicGroupName,
+              groupName: "Custom Schema",
               groupFields: [
-                PropertyPaneTextField('description', {
-                  label: strings.DescriptionFieldLabel
+                PropertyPaneTextField('customSchemaId', {
+                  label: "ID"
                 })
               ]
             }

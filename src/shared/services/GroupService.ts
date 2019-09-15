@@ -5,25 +5,49 @@ import {
   Logger,
   LogLevel
 } from "@pnp/logging";
-import { IGroup } from "../interfaces";
+import { IGroup, ICustomSchema } from "../interfaces";
 const LOG_SOURCE: string = 'GroupService';
 
 export class GroupService implements IGroupService {
 
   private graphClient: MSGraphClient;
+  private customSchema: ICustomSchema;
+  private errorMessage: string;
 
   constructor(graphClient: MSGraphClient){
     this.graphClient = graphClient;
   }
 
+  private get propsToSelect() : string[] {
+    let groupProperties = ['id','displayName','mailNickname'];
+    if (this.customSchema) {
+
+    }
+    return groupProperties;
+  }
+
+  public atatchCustomSchema(customSchemaId: string) : GroupService {
+    // TODO: check if customSchema exists
+    let customSchema = {
+      id: customSchemaId
+    } as ICustomSchema;
+
+    this.customSchema = customSchema;
+    return this;
+  }
+
   public async getGroupsByName(searchStr: string = ""): Promise<MicrosoftGraph.Group[]> {
     Logger.write(`[${LOG_SOURCE}] getGroups();`);
     try {
-      const response = await this.graphClient
+      let request = await this.graphClient
       .api('/groups')
       .version('v1.0')
-      .filter(searchStr ? `startswith(mailNickname,'${searchStr}')` : null)
-      .get();
+      .select(this.propsToSelect)
+      if (searchStr){
+        request.filter(`startswith(mailNickname,'${searchStr}')`);
+      }
+
+      const response = await request.get();
 
       let groups = new Array<IGroup>();
       response.value.forEach( (o365Group : MicrosoftGraph.Group) => {
