@@ -32,7 +32,7 @@ export default class CustomSchemaEditor extends React.Component<ICustomSchemaEdi
   public async componentDidMount(){
     Logger.write(`[${LOG_SOURCE}] componentDidMount();`);
     try {
-      let groups = await this.props.groupService.getGroupsByName("spo");
+      let groups = await this.props.groupService.getGroups("spo");
       this.setState({
         groups: groups
       });
@@ -58,7 +58,7 @@ export default class CustomSchemaEditor extends React.Component<ICustomSchemaEdi
         <SearchBox
           placeholder="Find Group"
           onSearch={searchString => {
-            this.getGroupsByName(searchString);
+            this.getGroups(searchString);
           }}
         />
 
@@ -70,12 +70,12 @@ export default class CustomSchemaEditor extends React.Component<ICustomSchemaEdi
     );
   }
 
-  private async getGroupsByName(searchString: string) : Promise<void> {
+  private async getGroups(searchString: string) : Promise<void> {
     Logger.write(`[${LOG_SOURCE}] getGroupsByName(${searchString});`);
 
     this.setState({
-      groups: await this.props.groupService.getGroupsByName(searchString)
-    })
+      groups: await this.props.groupService.getGroups(searchString)
+    });
 
   }
 

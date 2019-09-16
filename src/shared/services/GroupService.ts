@@ -36,13 +36,14 @@ export class GroupService implements IGroupService {
     return this;
   }
 
-  public async getGroupsByName(searchStr: string = ""): Promise<MicrosoftGraph.Group[]> {
+  public async getGroups(searchStr: string = ""): Promise<MicrosoftGraph.Group[]> {
     Logger.write(`[${LOG_SOURCE}] getGroups();`);
     try {
       let request = await this.graphClient
       .api('/groups')
       .version('v1.0')
-      .select(this.propsToSelect)
+      .select(this.propsToSelect);
+
       if (searchStr){
         request.filter(`startswith(mailNickname,'${searchStr}')`);
       }
@@ -51,18 +52,16 @@ export class GroupService implements IGroupService {
 
       let groups = new Array<IGroup>();
       response.value.forEach( (o365Group : MicrosoftGraph.Group) => {
-        groups.push(this.toGroup(o365Group));
+        groups.push(this.convertO365GroupToGroup(o365Group));
       });
-
-      Logger.writeJSON(groups);
-
       return groups;
+
     } catch (error) {
       Logger.writeJSON(error,LogLevel.Error);
     }
   }
 
-  private toGroup(o365Group: MicrosoftGraph.Group) : IGroup {
+  private convertO365GroupToGroup(o365Group: MicrosoftGraph.Group) : IGroup {
     return {
       id: o365Group.id,
       displayName: o365Group.displayName,

@@ -1,3 +1,3 @@
 export interface IGroupService {
-  getGroupsByName(searchString: string);
+  getGroups(searchString: string);
 }
