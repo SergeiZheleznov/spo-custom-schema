@@ -10,7 +10,7 @@ import { MSGraphClient } from '@microsoft/sp-http';
 import * as strings from 'CustomSchemaEditorWebPartStrings';
 import CustomSchemaEditor from './components/CustomSchemaEditor';
 import { ICustomSchemaEditorProps } from './components/ICustomSchemaEditorProps';
-import { IGroupService, GroupService } from '../../shared/services/';
+import { IGroupService, GroupService, ICustomSchemaService, CustomSchemaService } from '../../shared/services/';
 
 import {
   Logger,
@@ -29,6 +29,7 @@ export default class CustomSchemaEditorWebPart extends BaseClientSideWebPart<ICu
 
   private graphClient: MSGraphClient;
   private groupService: IGroupService;
+  private customSchemaService: ICustomSchemaService;
 
   private customSchemaErrorMessage: string = null;
   private customSchema: ICustomSchema = null;
@@ -43,6 +44,8 @@ export default class CustomSchemaEditorWebPart extends BaseClientSideWebPart<ICu
       Logger.write(`[${LOG_SOURCE}] Retrieving of Graph Client`);
       this.graphClient = await this.context.msGraphClientFactory.getClient();
       this.groupService = new GroupService(this.graphClient);
+
+      this.customSchemaService = new CustomSchemaService(this.graphClient);
 
       if (this.properties.customSchemaId) {
         this.customSchema = await this.getCustomSchema(this.properties.customSchemaId);
@@ -80,7 +83,6 @@ export default class CustomSchemaEditorWebPart extends BaseClientSideWebPart<ICu
 
       const response = await this.graphClient
         .api('/schemaExtensions')
-        .version("v1.0")
         .filter(`id eq '${customSchemaId}'`)
         .get();
 
@@ -109,16 +111,11 @@ export default class CustomSchemaEditorWebPart extends BaseClientSideWebPart<ICu
     Logger.write(`[${LOG_SOURCE}] onPropertyPaneConfigurationComplete`);
     if (this.properties.lockCustomSchema) {
       this.customSchema = await this.getCustomSchema(this.properties.customSchemaId);
-
     } else {
       this.customSchema = null;
     }
-
-
   }
-  protected async onPropertyPaneFieldChanged(propertyPath: string, oldValue: any, newValue: any): Promise<void> {
-    //super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
-  }
+
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return {
