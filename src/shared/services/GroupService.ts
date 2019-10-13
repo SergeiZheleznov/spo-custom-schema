@@ -5,13 +5,13 @@ import {
   Logger,
   LogLevel
 } from "@pnp/logging";
-import { IGroup, ICustomSchema } from "../interfaces";
+import { IGroup } from "../interfaces";
 const LOG_SOURCE: string = 'GroupService';
 
 export class GroupService implements IGroupService {
 
   private graphClient: MSGraphClient;
-  private customSchema: ICustomSchema;
+  private customSchema: MicrosoftGraph.SchemaExtension;
   private errorMessage: string;
 
   constructor(graphClient: MSGraphClient){
@@ -26,12 +26,7 @@ export class GroupService implements IGroupService {
     return groupProperties;
   }
 
-  public atatchCustomSchema(customSchemaId: string) : GroupService {
-    // TODO: check if customSchema exists
-    let customSchema = {
-      id: customSchemaId
-    } as ICustomSchema;
-
+  public atatchCustomSchema(customSchema: MicrosoftGraph.SchemaExtension): GroupService {
     this.customSchema = customSchema;
     return this;
   }
