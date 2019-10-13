@@ -46,7 +46,24 @@ export class CustomSchemaService implements ICustomSchemaService {
     } catch (error) {
       Logger.writeJSON(error,LogLevel.Error);
     }
+  }
 
+  public async get(customSchemaId: string): Promise<MicrosoftGraph.SchemaExtension> {
+    Logger.write(`[${LOG_SOURCE}] get(${customSchemaId})`);
+    try {
+      const response = await this.graphClient
+        .api('/schemaExtensions')
+        .filter(`id eq '${customSchemaId}'`)
+        .get();
 
+      if (response.value && response.value.length > 0) {
+        const customSchema = response.value[0] as microsoftgraph.SchemaExtension;
+        return customSchema;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      Logger.writeJSON(error,LogLevel.Error);
+    }
   }
 }

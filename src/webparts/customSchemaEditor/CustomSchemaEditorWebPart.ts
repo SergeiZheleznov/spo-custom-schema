@@ -11,13 +11,14 @@ import * as strings from 'CustomSchemaEditorWebPartStrings';
 import CustomSchemaEditor from './components/CustomSchemaEditor';
 import { ICustomSchemaEditorProps } from './components/ICustomSchemaEditorProps';
 import { IGroupService, GroupService, ICustomSchemaService, CustomSchemaService } from '../../shared/services/';
+import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 
 import {
   Logger,
   ConsoleListener,
   LogLevel
 } from "@pnp/logging";
-import { ICustomSchema } from '../../shared/interfaces';
+
 const LOG_SOURCE: string = 'CustomSchemaEditorWebPart';
 
 export interface ICustomSchemaEditorWebPartProps {
@@ -32,7 +33,7 @@ export default class CustomSchemaEditorWebPart extends BaseClientSideWebPart<ICu
   private customSchemaService: ICustomSchemaService;
 
   private customSchemaErrorMessage: string = null;
-  private customSchema: ICustomSchema = null;
+  private customSchema: MicrosoftGraph.SchemaExtension;
 
   public async onInit(): Promise<void> {
 
@@ -44,11 +45,19 @@ export default class CustomSchemaEditorWebPart extends BaseClientSideWebPart<ICu
       Logger.write(`[${LOG_SOURCE}] Retrieving of Graph Client`);
       this.graphClient = await this.context.msGraphClientFactory.getClient();
       this.groupService = new GroupService(this.graphClient);
-
       this.customSchemaService = new CustomSchemaService(this.graphClient);
 
       if (this.properties.customSchemaId) {
-        this.customSchema = await this.getCustomSchema(this.properties.customSchemaId);
+        Logger.write(`[${LOG_SOURCE}] trying to get custom schema`);
+        this.customSchema = await this.customSchemaService.get(this.properties.customSchemaId);
+        if (this.customSchema) {
+          this.properties.lockCustomSchema = true;
+        } else {
+          this.properties.lockCustomSchema = false;
+        }
+        Logger.writeJSON(this.customSchema);
+      } else {
+        this.properties.lockCustomSchema = false;
       }
 
     } catch (error) {
@@ -75,47 +84,22 @@ export default class CustomSchemaEditorWebPart extends BaseClientSideWebPart<ICu
     return Version.parse('1.0');
   }
 
-  private async getCustomSchema(customSchemaId: string): Promise<ICustomSchema> {
-    Logger.write(`[${LOG_SOURCE}] getCustomSchema('${this.properties.customSchemaId}');`);
-    this.customSchemaErrorMessage = null;
-
-    try {
-
-      const response = await this.graphClient
-        .api('/schemaExtensions')
-        .filter(`id eq '${customSchemaId}'`)
-        .get();
-
-      if (response.value && response.value.length > 0) {
-        const customSchema = response.value[0] as microsoftgraph.SchemaExtension;
-
-        return {
-          id: customSchema.id
-        } as ICustomSchema;
-
-      } else {
-        this.customSchemaErrorMessage = `Custom Schema not exists ${this.properties.customSchemaId}`;
-        return null;
-      }
-
-    } catch (error) {
-      Logger.writeJSON(error,LogLevel.Error);
-    }
-  }
-
   protected onAfterPropertyPaneChangesApplied(){
     Logger.write(`[${LOG_SOURCE}] onAfterPropertyPaneChangesApplied`);
   }
 
   protected async onPropertyPaneConfigurationComplete(){
     Logger.write(`[${LOG_SOURCE}] onPropertyPaneConfigurationComplete`);
-    if (this.properties.lockCustomSchema) {
-      this.customSchema = await this.getCustomSchema(this.properties.customSchemaId);
-    } else {
-      this.customSchema = null;
-    }
   }
 
+  protected async onPropertyPaneFieldChanged(propertyPath: string, oldValue: any, newValue: any) {
+    Logger.write(`[${LOG_SOURCE}] onPropertyPaneFieldChanged(${propertyPath}, ${oldValue}, ${newValue})`);
+    switch (propertyPath) {
+      case "lockCustomSchema":
+        await this.lockCustomSchemaPropertyHanfler(oldValue, newValue);
+        break;
+    }
+  }
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return {
@@ -132,7 +116,6 @@ export default class CustomSchemaEditorWebPart extends BaseClientSideWebPart<ICu
                 }),
                 PropertyPaneCheckbox('lockCustomSchema',{
                   text: "Lock schema",
-
                 })
               ]
             }
@@ -140,5 +123,17 @@ export default class CustomSchemaEditorWebPart extends BaseClientSideWebPart<ICu
         }
       ]
     };
+  }
+
+  private async lockCustomSchemaPropertyHanfler(oldValue: any, newValue: any) {
+    Logger.write(`[${LOG_SOURCE}] lockCustomSchemaPropertyHanfler()`);
+    switch (newValue) {
+      case true:
+        this.customSchema = await this.customSchemaService.get(this.properties.customSchemaId);
+        break;
+      case false:
+        this.customSchema = null;
+        break;
+    }
   }
 }
